@@ -1,0 +1,19 @@
+{
+  "name": "@kyrix/server",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Kyrix uses vite and trpc and provider a simple full-stack solution for react with extra features",
+  "scripts": {
+    "build": "tsc"
+  },
+  "exports": {
+    ".": "./index.ts",
+    "./middlewares": "./custom-middlewares.ts",
+    "./config": "./config.ts",
+    "./metadata": "./metadata.ts",
+    "./utils": "./utils.ts"
+  },
+  "author": "Nilotpaul",
+  "license": "MIT",
+  "dependencies": {}
+}
