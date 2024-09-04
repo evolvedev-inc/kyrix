@@ -1,5 +1,5 @@
-import Link from '../components/Link';
-import { trpc } from '../lib/trpcClient';
+import Link from '@/components/Link';
+import { trpc } from '@/lib/trpcClient';
 
 const Home = () => {
   const { data } = trpc.kyrixRouter.ssr.useQuery({ path: '/' });

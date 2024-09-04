@@ -1,4 +1,4 @@
-import { StrictMode } from 'react';
+import { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { Providers } from './Providers.tsx';
@@ -16,11 +16,19 @@ const routes = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <Home />,
+        element: (
+          <Suspense fallback='loading...'>
+            <Home />
+          </Suspense>
+        ),
       },
       {
         path: '/action',
-        element: <Action />,
+        element: (
+          <Suspense fallback='loading...'>
+            <Action />
+          </Suspense>
+        ),
       },
     ],
   },

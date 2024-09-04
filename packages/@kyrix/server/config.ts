@@ -2,7 +2,7 @@ import type { ViteDevServer } from 'vite';
 import type { Metadata } from './metadata';
 
 export type SSRData = {
-  meta: Partial<Metadata>;
+  meta?: Partial<Metadata>;
   initialData?: any;
 };
 

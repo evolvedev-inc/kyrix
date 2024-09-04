@@ -1,5 +1,5 @@
 import { Link as RouterLink, type LinkProps } from 'react-router-dom';
-import { useNavigate } from '../hooks/useNavigate';
+import { useNavigate } from '@/hooks/useNavigate';
 
 export default function Link({
   to,

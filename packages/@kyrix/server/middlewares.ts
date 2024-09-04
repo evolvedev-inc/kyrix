@@ -52,7 +52,7 @@ export const serveBuild =
   }: {
     root: string;
     isProduction: boolean;
-    ssrData?: { initialData?: any; meta: Partial<Metadata> };
+    ssrData?: { initialData?: any; meta?: Partial<Metadata> };
   }): Middleware =>
   async (req, res) => {
     try {
@@ -72,17 +72,15 @@ export const serveBuild =
           encoding: 'utf-8',
         });
 
-        let modifiledIndexHTML: string | undefined;
-        if (data) {
-          const headHTML = convertMetadataToHTML(data.meta);
-          modifiledIndexHTML = indexHTML.replace('<!-- app-meta -->', headHTML).replace(
-            '<!-- app-context -->',
-            `<script>window.__KYRIX_CONTEXT = ${JSON.stringify({
-              url: req.url ?? '/',
-              data: data.initialData,
-            })}</script>`
-          );
-        }
+        const headHTML = data ? convertMetadataToHTML(data.meta) : '';
+        const modifiledIndexHTML = indexHTML.replace('<!-- app-meta -->', headHTML.trim()).replace(
+          '<!-- app-context -->',
+          `<script>window.__KYRIX_CONTEXT = ${JSON.stringify({
+            url: req.url ?? '/',
+            data: data?.initialData,
+            meta: data?.meta,
+          })}</script>`
+        );
 
         res.setHeader('Content-Type', 'text/html');
         res.end(modifiledIndexHTML);
@@ -116,6 +114,7 @@ export const createKyrixMiddleware =
               `<script>window.__KYRIX_CONTEXT = ${JSON.stringify({
                 url: req.url ?? '/',
                 data: opts.ssrData?.initialData,
+                meta: opts.ssrData?.meta,
               })}</script>`
             );
 

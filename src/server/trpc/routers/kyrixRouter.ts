@@ -14,6 +14,7 @@ export const kyrixRouter = router({
       });
     }
     if (input.path === '/action') {
+      await new Promise((r) => setTimeout(r, 2500));
       return handleSSR({
         meta: {
           title: 'Action',

@@ -1,9 +1,15 @@
-import { trpc } from '../lib/trpcClient';
+import Link from '@/components/Link';
+import { useKyrixContext } from '@kyrix/react/KyrixProvider';
 
 const Action = () => {
-  const data = trpc.kyrixRouter.ssr.useQuery({ path: '/action' });
+  const { currentPageData: data } = useKyrixContext();
 
-  return <div>{JSON.stringify(data.data)}</div>;
+  return (
+    <div>
+      {JSON.stringify(data)}
+      <Link to='/'>Go Home</Link>
+    </div>
+  );
 };
 
 export default Action;
