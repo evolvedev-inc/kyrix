@@ -3,15 +3,15 @@ import { createRoot } from 'react-dom/client';
 
 import { Providers } from './Providers.tsx';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+
 import App from './App.tsx';
-import Action from './Action.tsx';
-import Home from './Home.tsx';
+import Action from './pages/Action.tsx';
+import Home from './pages/Home.tsx';
 
 import './globals.css';
 
 const routes = createBrowserRouter([
   {
-    path: '/',
     element: <App />,
     children: [
       {

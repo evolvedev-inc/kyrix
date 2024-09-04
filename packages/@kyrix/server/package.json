@@ -7,11 +7,7 @@
     "build": "tsc"
   },
   "exports": {
-    ".": "./index.ts",
-    "./middlewares": "./custom-middlewares.ts",
-    "./config": "./config.ts",
-    "./metadata": "./metadata.ts",
-    "./utils": "./utils.ts"
+    ".": "./index.ts"
   },
   "author": "Nilotpaul",
   "license": "MIT",

@@ -1,11 +1,11 @@
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { KyrixContextProvider } from '@kyrix/react/KyrixProvider';
 
 const App = () => {
-  const navigate = useNavigate();
+  const location = useLocation();
 
   return (
-    <KyrixContextProvider navigate={navigate}>
+    <KyrixContextProvider location={location.pathname}>
       <Outlet />
     </KyrixContextProvider>
   );

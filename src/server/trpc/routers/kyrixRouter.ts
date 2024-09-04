@@ -1,4 +1,4 @@
-import { handleSSR } from '@kyrix/server/utils';
+import { handleSSR } from '@kyrix/server';
 import { publicProcedure, router } from '../trpc';
 import { z } from 'zod';
 

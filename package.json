@@ -1,5 +1,5 @@
 {
-  "name": "trpc-vite-simple",
+  "name": "client",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -7,6 +7,9 @@
     "build": "tsc -b && cross-env NODE_ENV=production vite build --config vite.config.server.ts && vite build",
     "start": "cross-env NODE_ENV=production node ./dist/server/server.cjs",
     "lint": "eslint ."
+  },
+  "exports": {
+    "./*": "./src/*"
   },
   "dependencies": {
     "@tanstack/react-query": "^4.36.1",
@@ -19,7 +22,9 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.1",
     "superjson": "^2.2.1",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "@kyrix/server": "workspace:*",
+    "@kyrix/react": "workspace:*"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",

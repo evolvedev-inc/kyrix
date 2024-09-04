@@ -22,7 +22,7 @@
 
     "baseUrl": ".",
     "paths": {
-      "@kyrix/react/*": ["./packages/@kyrix/react/*"]
+      "@kyrix/react/*": ["./packages/@kyrix/react/src/*"]
     }
   },
   "include": ["src", "./packages/@kyrix/react/**/*"],

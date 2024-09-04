@@ -6,9 +6,11 @@
     "build": "tsc"
   },
   "exports": {
-    "./*": "./*"
+    "./*": "./src/*"
   },
   "author": "Nilotpaul",
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {
+    "client": "workspace:*"
+  }
 }

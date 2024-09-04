@@ -1,4 +1,4 @@
-import { trpc } from './lib/trpcClient';
+import { trpc } from '../lib/trpcClient';
 
 const Action = () => {
   const data = trpc.kyrixRouter.ssr.useQuery({ path: '/action' });

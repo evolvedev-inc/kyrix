@@ -3,6 +3,6 @@
   "ext": "js,ts,jsx,tsx",
   "ignore": ["dist", "tests", "build"],
   "exec": "cross-env NODE_ENV=development tsx ./src/server/main.ts",
-  "delay": "5",
+  "delay": "0",
   "quiet": true
 }
