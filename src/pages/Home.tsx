@@ -2,7 +2,7 @@ import Link from '@/components/Link';
 import { trpc } from '@/lib/trpcClient';
 
 const Home = () => {
-  const { data } = trpc.kyrixRouter.ssr.useQuery({ path: '/' });
+  const { data } = trpc.kyrix.ssr.useQuery({ path: '/' });
 
   return (
     <div>
@@ -10,9 +10,7 @@ const Home = () => {
 
       {JSON.stringify(data)}
 
-      <Link state={data?.initialData} to='/action'>
-        go
-      </Link>
+      <Link state={data?.initialData} to='/action'></Link>
     </div>
   );
 };

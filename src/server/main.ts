@@ -55,7 +55,7 @@ http
       const trpcCaller = callerFactory({ req, res, env });
 
       // Getting the metadata and initial data per route.
-      const data = await trpcCaller.kyrixRouter.ssr({ path: req.url || '/' });
+      const data = await trpcCaller.kyrix.ssr({ path: req.url || '/' });
 
       // Kyrix handles index.html modification, development and production mode.
       const kyrixServe = createKyrixMiddleware({

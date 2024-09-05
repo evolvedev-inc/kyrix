@@ -1,7 +1,8 @@
 import type { Metadata } from '@kyrix/server';
 import { useContext, createContext, useState, useEffect } from 'react';
 import { trpc } from 'client/lib/trpcClient.ts';
-import { Helmet, HelmetProvider } from 'react-helmet-async';
+import { HelmetProvider } from 'react-helmet-async';
+import MetadataWrapper from './MetadataWrapper';
 
 export type KyrixContextProviderProps = {
   children: React.ReactNode;
@@ -25,11 +26,7 @@ export type KyrixContext = {
   isNavigating: boolean;
 };
 
-const KyrixContext = createContext<KyrixContext>({
-  updatePageData: () => undefined,
-  router: () => undefined,
-  isNavigating: false,
-});
+const KyrixContext = createContext<KyrixContext | undefined>(undefined);
 
 export const KyrixContextProvider = ({
   children,
@@ -39,18 +36,23 @@ export const KyrixContextProvider = ({
   const [isNavigating, setIsNavigating] = useState(false);
   const trpcCtx = trpc.useUtils();
 
-  const { setData, getData, fetch } = trpcCtx.kyrixRouter.ssr;
+  const { setData, getData, fetch } = trpcCtx.kyrix.ssr;
 
   // @ts-expect-error window is not typed with context.
   const initialData = window.__KYRIX_CONTEXT as
     | { url: string; data?: any; meta?: Partial<Metadata> }
     | undefined;
+  if (!initialData) {
+    throw new Error(
+      'The initial Kyrix context is missing in the server-rendered HTML. Ensure the context is set correctly.'
+    );
+  }
   setData(
     { path: initialData?.url || '/' },
     { initialData: initialData?.data, meta: initialData?.meta }
   );
 
-  const [currentPageData, setCurrentPageData] = useState<RouteData | undefined>(initialData);
+  const [currentPageData, setCurrentPageData] = useState<RouteData>(initialData);
 
   useEffect(() => {
     (async function () {
@@ -61,8 +63,16 @@ export const KyrixContextProvider = ({
       } else {
         const data = await fetch(
           { path: location },
-          { staleTime: routeDataStaleTime, cacheTime: routeDataCacheTime }
+          {
+            retry: (count, err) => err.data?.code !== 'NOT_FOUND' && count <= 2,
+            staleTime: routeDataStaleTime,
+            cacheTime: routeDataCacheTime,
+          }
         );
+        if (!data) {
+          console.error("You haven't set any metadata for", location);
+          return;
+        }
         setCurrentPageData(data);
       }
     })();
@@ -79,15 +89,22 @@ export const KyrixContextProvider = ({
 
     setIsNavigating(true);
 
-    trpcCtx.kyrixRouter.ssr
+    trpcCtx.kyrix.ssr
       .fetch(
         { path: href },
         {
           retry: (count, err) => err.data?.code !== 'NOT_FOUND' && count <= 2,
-          staleTime: Infinity,
+          staleTime: routeDataStaleTime,
+          cacheTime: routeDataCacheTime,
         }
       )
-      .then(setCurrentPageData)
+      .then((data) => {
+        if (!data) {
+          console.error("You haven't set any metadata for", href);
+          return;
+        }
+        setCurrentPageData(data);
+      })
       .finally(() => {
         setIsNavigating(false);
         navigate();
@@ -104,11 +121,8 @@ export const KyrixContextProvider = ({
           currentPageData,
         }}
       >
+        <MetadataWrapper data={currentPageData} />
         {children}
-        <Helmet>
-          <title>{currentPageData?.meta?.title}</title>
-          <meta name='description' content={currentPageData?.meta?.description} />
-        </Helmet>
       </KyrixContext.Provider>
     </HelmetProvider>
   );

@@ -1,14 +1,20 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import { KyrixContextProvider } from '@kyrix/react/KyrixProvider';
 
-const App = () => {
+export default function Root() {
   const location = useLocation();
 
   return (
     <KyrixContextProvider location={location.pathname}>
-      <Outlet />
+      <App />
     </KyrixContextProvider>
   );
-};
+}
 
-export default App;
+export const App = () => {
+  return (
+    <main>
+      <Outlet />
+    </main>
+  );
+};

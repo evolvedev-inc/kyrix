@@ -18,8 +18,9 @@ export const kyrixRouter = router({
       return handleSSR({
         meta: {
           title: 'Action',
+          description: 'Action page desc',
         },
-        initialData: [{ name: 'Soham Basak', age: 21 }],
+        initialData: [{ name: 'Soham', age: 21 }],
       });
     }
   }),

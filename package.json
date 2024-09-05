@@ -6,7 +6,8 @@
     "dev": "nodemon",
     "build": "tsc -b && cross-env NODE_ENV=production vite build --config vite.config.server.ts && vite build",
     "start": "cross-env NODE_ENV=production node ./dist/server/server.cjs",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "tsc": "tsc -b"
   },
   "exports": {
     "./*": "./src/*"

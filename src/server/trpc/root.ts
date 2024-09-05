@@ -2,7 +2,7 @@ import { kyrixRouter } from './routers/kyrixRouter';
 import { router } from './trpc';
 
 export const appRouter = router({
-  kyrixRouter,
+  kyrix: kyrixRouter,
 });
 
 export type AppRouter = typeof appRouter;

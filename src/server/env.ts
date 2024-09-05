@@ -5,8 +5,11 @@ configDotenv({
   path: './.env',
 });
 
+// Add all possible environment varibales which will be required in server only.
+// These will be validated and crash the application with appropriate error to reduce
+// bugs at runtime.
 const envSchema = z.object({
-  NODE_ENV: z.enum(['development', 'production', 'build-client', 'build-server']),
+  NODE_ENV: z.enum(['development', 'production']),
   SERVER_PORT: z.coerce.number().nonnegative(),
 });
 
