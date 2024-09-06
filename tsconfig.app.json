@@ -27,5 +27,5 @@
     }
   },
   "include": ["src", "./packages/@kyrix/react/**/*"],
-  "exclude": ["./packages/@kyrix/server/**/*", "node_modules"]
+  "exclude": ["node_modules"]
 }

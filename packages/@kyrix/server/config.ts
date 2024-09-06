@@ -2,8 +2,8 @@ import type { ViteDevServer } from 'vite';
 import type { Metadata } from './metadata';
 
 export type SSRData<T = any> = {
-  meta?: Partial<Metadata>;
-  initialData?: T;
+  meta?: Metadata;
+  initialData?: T | undefined;
 };
 
 export type KyrixMiddlewareConfig = {

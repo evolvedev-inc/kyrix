@@ -21,7 +21,7 @@
 
     "baseUrl": ".",
     "paths": {
-      "@kyrix/server/*": ["./packages/@kyrix/server"]
+      "@kyrix/server/*": ["./packages/@kyrix/server/*"]
     }
   },
   "include": ["vite.config.server.ts", "./src/server/**/*", "./packages/@kyrix/server/**/*"],

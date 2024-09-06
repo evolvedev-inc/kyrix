@@ -1,12 +1,12 @@
 import { createBrowserRouter } from 'react-router-dom';
 
-import App from './App';
+import Root from './App';
 import Home from './pages/Home';
 import Action from './pages/Action';
 
 export const routes = createBrowserRouter([
   {
-    element: <App />,
+    element: <Root />,
     children: [
       {
         path: '/',
@@ -15,6 +15,10 @@ export const routes = createBrowserRouter([
       {
         path: '/action',
         element: <Action />,
+      },
+      {
+        path: '/test/:testId',
+        element: 'Test Page',
       },
     ],
   },

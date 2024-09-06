@@ -1,8 +1,10 @@
 import Link from '@/components/Link';
 import { trpc } from '@/lib/trpcClient';
+import { KyrixRouter } from '@/server/trpc/routers/kyrixRouter';
 
 const Home = () => {
   const { data } = trpc.kyrix.ssr.useQuery({ path: '/' });
+  const initialData = data as KyrixRouter['test'];
 
   return (
     <div>
@@ -10,7 +12,9 @@ const Home = () => {
 
       {JSON.stringify(data)}
 
-      <Link state={data?.initialData} to='/action'></Link>
+      <Link prefetch='hover' state={initialData} to='/action'>
+        Action
+      </Link>
     </div>
   );
 };

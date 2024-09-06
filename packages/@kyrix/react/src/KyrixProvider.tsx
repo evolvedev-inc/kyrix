@@ -15,7 +15,7 @@ export type KyrixContextProviderProps = {
 };
 
 export type RouteData = {
-  meta?: Partial<Metadata>;
+  meta?: Metadata;
   initialData?: any;
 };
 
@@ -40,7 +40,7 @@ export const KyrixContextProvider = ({
 
   // @ts-expect-error window is not typed with context.
   const initialData = window.__KYRIX_CONTEXT as
-    | { url: string; data?: any; meta?: Partial<Metadata> }
+    | { url: string; data?: any; meta?: Metadata }
     | undefined;
   if (!initialData) {
     throw new Error(
@@ -121,7 +121,7 @@ export const KyrixContextProvider = ({
           currentPageData,
         }}
       >
-        <MetadataWrapper data={currentPageData} />
+        <MetadataWrapper meta={currentPageData} />
         {children}
       </KyrixContext.Provider>
     </HelmetProvider>

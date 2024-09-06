@@ -37,11 +37,15 @@ export const execMiddlewares = (
 };
 
 export const logger =
-  ({ port }: { port: number }): Middleware =>
+  ({ port, verbose = false }: { port: number; verbose?: boolean }): Middleware =>
   (req, res, next) => {
     const url = new URL(`http://localhost:${port}${req.url || '/'}`);
-    console.log(`Incoming Request on ${decodeURI(url.pathname)} ${res.statusCode}`);
-    return next?.();
+    if (verbose) {
+      console.log(`Incoming Request on ${decodeURI(url.pathname)} - Status: ${res.statusCode}`);
+    } else if (url.pathname.startsWith('/api')) {
+      console.log(`Incoming API Request on ${decodeURI(url.pathname)} - Status: ${res.statusCode}`);
+    }
+    next?.();
   };
 
 export const serveBuild =
@@ -52,7 +56,7 @@ export const serveBuild =
   }: {
     root: string;
     isProduction: boolean;
-    ssrData?: { initialData?: any; meta?: Partial<Metadata> };
+    ssrData?: { initialData?: any; meta?: Metadata };
   }): Middleware =>
   async (req, res) => {
     try {

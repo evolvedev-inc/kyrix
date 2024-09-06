@@ -1,5 +1,5 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import { KyrixContextProvider } from '@kyrix/react/KyrixProvider';
+import { KyrixContextProvider, useKyrixContext } from '@kyrix/react/KyrixProvider';
 
 export default function Root() {
   const location = useLocation();
@@ -12,8 +12,11 @@ export default function Root() {
 }
 
 export const App = () => {
+  const { isNavigating } = useKyrixContext();
+
   return (
     <main>
+      {isNavigating && 'loading...'}
       <Outlet />
     </main>
   );
