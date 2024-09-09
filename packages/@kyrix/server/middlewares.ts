@@ -100,8 +100,9 @@ export const createKyrixMiddleware =
   ({ isProduction, root, viteServer: vite, ...opts }: KyrixMiddlewareConfig): Middleware =>
   async (req, res, next) => {
     if (!isProduction) {
-      if (!vite)
+      if (!vite) {
         throw new Error('Currently in development mode but failed to initialize vite server');
+      }
 
       vite.middlewares(req, res, async () => {
         try {

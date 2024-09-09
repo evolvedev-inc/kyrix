@@ -5,10 +5,13 @@ export const ssrRoutes = [
   {
     id: 'Home' as const,
     path: '/',
-    handler: () => ({
-      meta: { title: 'Home', description: 'Home page desc', author: 'Nilotpaul Nandi' },
-      initialData: [{ name: 'Paul', age: 20 }],
-    }),
+    handler: async () => {
+      await new Promise((r) => setTimeout(r, 3000));
+      return {
+        meta: { title: 'Home', description: 'Home page desc', author: 'Nilotpaul Nandi' },
+        initialData: [{ name: 'Paul', age: 20 }],
+      };
+    },
   },
   {
     id: 'Action' as const,
@@ -16,17 +19,18 @@ export const ssrRoutes = [
     handler: async () => {
       return {
         meta: { title: 'Action', description: 'Action page desc' },
+        initialData: [{ name: 'Soham', age: 21 }],
       };
     },
   },
   {
     id: 'test' as const,
     path: '/test/:testId',
-    handler: (ctx, params) => {
+    handler: (_, { testId }) => {
       return {
         meta: {
-          title: params.testId as string,
-          description: params.testId as string,
+          title: testId as string,
+          description: testId as string,
         },
       };
     },

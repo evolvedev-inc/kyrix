@@ -1,7 +1,7 @@
 import { SSRData } from './config';
 
 export type KyrixSSRHandlerReturnType = {
-  meta: NonNullable<SSRData['meta']>;
+  meta?: NonNullable<SSRData['meta']>;
   initialData?: SSRData['initialData'];
 };
 

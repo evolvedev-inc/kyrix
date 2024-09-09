@@ -26,6 +26,6 @@
       "@kyrix/react/*": ["./packages/@kyrix/react/src/*"]
     }
   },
-  "include": ["src", "./packages/@kyrix/react/**/*"],
-  "exclude": ["node_modules"]
+  "include": ["src", "./packages/@kyrix/react/**/*", "packages/@kyrix/extras/useNavigate.ts"],
+  "exclude": ["node_modules", "./src/server"]
 }

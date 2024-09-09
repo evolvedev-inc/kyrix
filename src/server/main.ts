@@ -3,7 +3,7 @@ import type { ViteDevServer } from 'vite';
 import { createCallerFactory } from '@trpc/server';
 import { createHTTPHandler } from '@trpc/server/adapters/standalone';
 
-import { createKyrixMiddleware, execMiddlewares } from '@kyrix/server';
+import { createKyrixMiddleware, createViteDevServer, execMiddlewares } from '@kyrix/server';
 
 import { serverEnv as env } from './env';
 import { appRouter } from './trpc/root';
@@ -26,7 +26,6 @@ const trpcHandler = createHTTPHandler({
 let vite: ViteDevServer | undefined;
 (async function () {
   if (!isProduction) {
-    const { createViteDevServer } = await import('@kyrix/server');
     const react = (await import('@vitejs/plugin-react-swc')).default;
     vite = await createViteDevServer({
       port: env.SERVER_PORT,

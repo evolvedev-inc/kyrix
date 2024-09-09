@@ -1,4 +1,4 @@
-import type { Metadata } from '@kyrix/server';
+import type { Metadata, SSRData } from '@kyrix/server';
 import { useContext, createContext, useState, useEffect } from 'react';
 import { trpc } from 'client/lib/trpcClient.ts';
 import { HelmetProvider } from 'react-helmet-async';
@@ -6,34 +6,42 @@ import MetadataWrapper from './MetadataWrapper';
 
 export type KyrixContextProviderProps = {
   children: React.ReactNode;
-  location: string;
+  pathname: string;
+  navigate: (href: string) => void;
   caching?: {
-    strategy?: 'in-memory';
     routeDataStaleTime?: number;
     routeDataCacheTime?: number;
   };
 };
 
-export type RouteData = {
-  meta?: Metadata;
-  initialData?: any;
-};
-
 export type KyrixContext = {
-  updatePageData: (href: string, data: RouteData) => void;
+  // As we have defined valid defaults for each property.
+  // This will make sure that the user has wrapped their app
+  // with kyrix context provider.
+  __initialised: boolean;
+
+  updatePageData: (href: string, data: SSRData) => void;
   router: (href: string, navigate: () => void) => void;
-  currentPageData?: RouteData;
+  shouldBlock: (nextPathname: string) => boolean;
   isNavigating: boolean;
 };
 
-const KyrixContext = createContext<KyrixContext | undefined>(undefined);
+const KyrixContext = createContext<KyrixContext>({
+  isNavigating: false,
+  router: () => undefined,
+  shouldBlock: () => false,
+  updatePageData: () => undefined,
+  __initialised: false,
+});
 
 export const KyrixContextProvider = ({
   children,
-  location,
+  pathname,
+  navigate,
   caching: { routeDataStaleTime = Infinity, routeDataCacheTime } = {},
 }: KyrixContextProviderProps) => {
   const [isNavigating, setIsNavigating] = useState(false);
+  const [nextPath, setNextPath] = useState<string | null>(null);
   const trpcCtx = trpc.useUtils();
 
   const { setData, getData, fetch } = trpcCtx.kyrix.ssr;
@@ -48,38 +56,42 @@ export const KyrixContextProvider = ({
     );
   }
   setData(
-    { path: initialData?.url || '/' },
+    { path: initialData?.url || pathname },
     { initialData: initialData?.data, meta: initialData?.meta }
   );
 
-  const [currentPageData, setCurrentPageData] = useState<RouteData>(initialData);
+  const [currentPageData, setCurrentPageData] = useState<SSRData | undefined>(initialData);
+
+  const shouldBlock = (nextPathname: string): boolean => {
+    if (isNavigating) {
+      return true;
+    }
+    const alreadyCached = getData({ path: nextPathname.split('?')[0] });
+    if (alreadyCached) {
+      setCurrentPageData(alreadyCached);
+      return false;
+    }
+    setNextPath(nextPathname);
+    setIsNavigating(true);
+    return true;
+  };
 
   useEffect(() => {
-    (async function () {
-      const cachedRouteData = getData({ path: location });
-      if (cachedRouteData?.meta || cachedRouteData?.initialData) {
-        setData({ path: location }, cachedRouteData);
-        setCurrentPageData(cachedRouteData);
-      } else {
-        const data = await fetch(
-          { path: location },
-          {
-            retry: (count, err) => err.data?.code !== 'NOT_FOUND' && count <= 2,
-            staleTime: routeDataStaleTime,
-            cacheTime: routeDataCacheTime,
-          }
-        );
-        if (!data) {
-          console.error("You haven't set any metadata for", location);
-          return;
-        }
-        setCurrentPageData(data);
-      }
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location]);
+    if (nextPath && !isNavigating) {
+      navigate(nextPath);
+      setNextPath(null);
+      return;
+    }
+    if (nextPath) {
+      fetch({ path: nextPath.split('?')[0] })
+        .then(setCurrentPageData)
+        .finally(() => {
+          setIsNavigating(false);
+        });
+    }
+  }, [nextPath, isNavigating, navigate, fetch]);
 
-  const updatePageData = (href: string, data: RouteData) => {
+  const updatePageData = (href: string, data: SSRData) => {
     setData({ path: href }, { meta: data.meta, initialData: data.initialData });
     setCurrentPageData(data);
   };
@@ -98,13 +110,7 @@ export const KyrixContextProvider = ({
           cacheTime: routeDataCacheTime,
         }
       )
-      .then((data) => {
-        if (!data) {
-          console.error("You haven't set any metadata for", href);
-          return;
-        }
-        setCurrentPageData(data);
-      })
+      .then(setCurrentPageData)
       .finally(() => {
         setIsNavigating(false);
         navigate();
@@ -117,8 +123,9 @@ export const KyrixContextProvider = ({
         value={{
           updatePageData,
           router,
+          shouldBlock,
           isNavigating,
-          currentPageData,
+          __initialised: true,
         }}
       >
         <MetadataWrapper meta={currentPageData} />
@@ -131,7 +138,7 @@ export const KyrixContextProvider = ({
 // eslint-disable-next-line react-refresh/only-export-components
 export const useKyrixContext = () => {
   const context = useContext(KyrixContext);
-  if (context === undefined) throw new Error('Wrap your application with Kyrix Context Provider.');
+  if (!context.__initialised) throw new Error('Wrap your application with Kyrix Context Provider.');
 
   return context;
 };

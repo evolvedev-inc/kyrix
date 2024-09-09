@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
-import { RouteData } from './KyrixProvider';
+import { SSRData } from '@kyrix/server';
 
-const MetadataWrapper = ({ meta: data }: { meta?: RouteData }) => {
+const MetadataWrapper = ({ meta: data }: { meta?: SSRData }) => {
   return (
     <Helmet>
       {data?.meta?.title && <title>{data.meta.title}</title>}

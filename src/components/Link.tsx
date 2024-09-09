@@ -1,5 +1,5 @@
 import { Link as RouterLink, type LinkProps as ReactRouterLinkProps } from 'react-router-dom';
-import { useNavigate } from '@/hooks/useNavigate';
+import { useNavigate } from 'react-router-dom';
 import { trpc } from '@/lib/trpcClient';
 
 type LinkProps = ReactRouterLinkProps & {
