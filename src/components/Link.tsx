@@ -1,19 +1,15 @@
 import { Link as RouterLink, type LinkProps as ReactRouterLinkProps } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { trpc } from '@/lib/trpcClient';
+import { type LinkArgs, useLink } from '@kyrix/react/hooks';
 
 type LinkProps = ReactRouterLinkProps & {
-  prefetch?: ('hover' | 'viewport') | false;
+  prefetch?: LinkArgs['prefetch'];
 };
 
-// Make sure to use this Link component for correct metadata and
-// page initial data updates.
-
+// Make sure to use this Link component for getting additional features like prefetch.
 // This link can be customised with any choice of router.
 
-// If any change needed, first modify the useNavigate hook.
-// Then swap the RouterLink component with the link from your
-// choice of router.
+// If any change needed, swap your router's link with RouterLink.
 export default function Link({
   to,
   preventScrollReset,
@@ -25,7 +21,7 @@ export default function Link({
   ...props
 }: LinkProps) {
   const navigate = useNavigate();
-  const trpcCtx = trpc.useUtils();
+  const { onHover } = useLink();
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -38,18 +34,12 @@ export default function Link({
     });
   };
 
-  const onHover = async () => {
-    if (prefetch === false) return;
-
-    if (prefetch === 'hover') {
-      await trpcCtx.kyrix.ssr.prefetch(
-        { path: to.toString().split('?')[0] },
-        {
-          retry: false,
-        }
-      );
-    }
-  };
-
-  return <RouterLink onClick={handleClick} onMouseEnter={onHover} to={to} {...props} />;
+  return (
+    <RouterLink
+      onClick={handleClick}
+      onMouseEnter={() => onHover({ href: to.toString(), prefetch })}
+      to={to}
+      {...props}
+    />
+  );
 }

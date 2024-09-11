@@ -7,7 +7,7 @@ export type KyrixSSRHandlerReturnType = {
 
 export type KyrixSSRHandler<T> = (
   ctx: T,
-  params: Record<string, any>
+  params: Record<string, string>
 ) => Promise<KyrixSSRHandlerReturnType> | KyrixSSRHandlerReturnType;
 
 export type SSRRoute<T> = {

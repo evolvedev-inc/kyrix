@@ -3,6 +3,7 @@ import { match } from 'path-to-regexp';
 import { ssrRoutes } from '../../SSR';
 import type { KyrixSSRHandler as KyrixSSRHandlerType } from '@kyrix/server';
 import { z } from 'zod';
+import { TRPCError } from '@trpc/server';
 
 type SSRRouteDefinitions = typeof ssrRoutes;
 
@@ -22,18 +23,28 @@ export type KyrixRouter = {
 
 export const kyrixRouter = router({
   ssr: publicProcedure.input(z.object({ path: z.string() })).query(async ({ input, ctx }) => {
-    let params: Record<string, any> = {};
+    try {
+      let params: Record<string, any> = {};
 
-    const matchedRoute = ssrRoutes.find((route) => {
-      const matcher = match(route.path, { decode: decodeURIComponent });
-      const result = matcher(input.path);
+      const matchedRoute = ssrRoutes.find((route) => {
+        const matcher = match(route.path, { decode: decodeURIComponent });
+        const result = matcher(input.path);
 
-      params = result ? result.params : {};
-      return result ? route : false;
-    });
+        params = result ? result.params : {};
+        return result ? route : false;
+      });
 
-    if (matchedRoute) {
-      return (matchedRoute.handler as KyrixSSRHandler)(ctx, params);
+      if (matchedRoute) {
+        const data = await (matchedRoute.handler as KyrixSSRHandler)(ctx, params);
+        return data;
+      }
+    } catch (err) {
+      console.error(`Error in KyrixRouter for ${input.path} - ${err}`);
+
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'An error has occurred.',
+      });
     }
 
     return {

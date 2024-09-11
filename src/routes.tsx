@@ -7,6 +7,7 @@ import Action from './pages/Action';
 export const routes = createBrowserRouter([
   {
     element: <Root />,
+    errorElement: 'Some error happend',
     children: [
       {
         path: '/',

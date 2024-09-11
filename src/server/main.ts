@@ -3,7 +3,12 @@ import type { ViteDevServer } from 'vite';
 import { createCallerFactory } from '@trpc/server';
 import { createHTTPHandler } from '@trpc/server/adapters/standalone';
 
-import { createKyrixMiddleware, createViteDevServer, execMiddlewares } from '@kyrix/server';
+import {
+  createKyrixMiddleware,
+  createViteDevServer,
+  execMiddlewares,
+  type SSRData,
+} from '@kyrix/server';
 
 import { serverEnv as env } from './env';
 import { appRouter } from './trpc/root';
@@ -54,7 +59,12 @@ http
       const trpcCaller = callerFactory({ req, res, env });
 
       // Getting the metadata and initial data per route.
-      const data = await trpcCaller.kyrix.ssr({ path: req.url || '/' });
+      let data: SSRData = { meta: undefined, initialData: undefined };
+      try {
+        data = await trpcCaller.kyrix.ssr({ path: req.url || '/' });
+      } catch {
+        data = { meta: undefined, initialData: undefined };
+      }
 
       // Kyrix handles index.html modification, development and production mode.
       const kyrixServe = createKyrixMiddleware({

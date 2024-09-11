@@ -24,10 +24,15 @@ export type KyrixContext = {
   router: (href: string, navigate: () => void) => void;
   shouldBlock: (nextPathname: string) => boolean;
   isNavigating: boolean;
+  routeError: { route?: string; error: unknown };
 };
 
 const KyrixContext = createContext<KyrixContext>({
   isNavigating: false,
+  routeError: {
+    error: undefined,
+    route: undefined,
+  },
   router: () => undefined,
   shouldBlock: () => false,
   updatePageData: () => undefined,
@@ -41,6 +46,10 @@ export const KyrixContextProvider = ({
   caching: { routeDataStaleTime = Infinity, routeDataCacheTime } = {},
 }: KyrixContextProviderProps) => {
   const [isNavigating, setIsNavigating] = useState(false);
+  const [routeError, setRouteError] = useState<{ route?: string; error: unknown }>({
+    route: undefined,
+    error: undefined,
+  });
   const [nextPath, setNextPath] = useState<string | null>(null);
   const trpcCtx = trpc.useUtils();
 
@@ -63,15 +72,19 @@ export const KyrixContextProvider = ({
   const [currentPageData, setCurrentPageData] = useState<SSRData | undefined>(initialData);
 
   const shouldBlock = (nextPathname: string): boolean => {
+    const href = nextPathname.split('?')[0];
     if (isNavigating) {
       return true;
     }
-    const alreadyCached = getData({ path: nextPathname.split('?')[0] });
+    if (routeError.route === nextPathname && routeError.error) {
+      return false;
+    }
+    const alreadyCached = getData({ path: href });
     if (alreadyCached) {
       setCurrentPageData(alreadyCached);
       return false;
     }
-    setNextPath(nextPathname);
+    setNextPath(href);
     setIsNavigating(true);
     return true;
   };
@@ -83,8 +96,13 @@ export const KyrixContextProvider = ({
       return;
     }
     if (nextPath) {
-      fetch({ path: nextPath.split('?')[0] })
+      const href = nextPath.split('?')[0];
+
+      fetch({ path: href })
         .then(setCurrentPageData)
+        .catch((err) => {
+          setRouteError({ route: href, error: err });
+        })
         .finally(() => {
           setIsNavigating(false);
         });
@@ -92,7 +110,7 @@ export const KyrixContextProvider = ({
   }, [nextPath, isNavigating, navigate, fetch]);
 
   const updatePageData = (href: string, data: SSRData) => {
-    setData({ path: href }, { meta: data.meta, initialData: data.initialData });
+    setData({ path: href }, data);
     setCurrentPageData(data);
   };
 
@@ -111,6 +129,9 @@ export const KyrixContextProvider = ({
         }
       )
       .then(setCurrentPageData)
+      .catch((err) => {
+        setRouteError({ route: href, error: err });
+      })
       .finally(() => {
         setIsNavigating(false);
         navigate();
@@ -125,6 +146,7 @@ export const KyrixContextProvider = ({
           router,
           shouldBlock,
           isNavigating,
+          routeError,
           __initialised: true,
         }}
       >
