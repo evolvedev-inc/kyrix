@@ -15,12 +15,3 @@ export type SSRRoute<T> = {
   path: string;
   handler: KyrixSSRHandler<T>;
 };
-
-export const handleSSR = <T = any>({ meta, initialData }: SSRData<T>) => {
-  // Do something before returning if necessary.
-
-  return {
-    meta,
-    initialData,
-  };
-};

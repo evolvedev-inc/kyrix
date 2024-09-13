@@ -24,7 +24,7 @@ export type KyrixContext = {
   router: (href: string, navigate: () => void) => void;
   shouldBlock: (nextPathname: string) => boolean;
   isNavigating: boolean;
-  routeError: { route?: string; error: unknown };
+  routeError: { route?: string; error: any };
 };
 
 const KyrixContext = createContext<KyrixContext>({
@@ -46,7 +46,7 @@ export const KyrixContextProvider = ({
   caching: { routeDataStaleTime = Infinity, routeDataCacheTime } = {},
 }: KyrixContextProviderProps) => {
   const [isNavigating, setIsNavigating] = useState(false);
-  const [routeError, setRouteError] = useState<{ route?: string; error: unknown }>({
+  const [routeError, setRouteError] = useState<{ route?: string; error: any }>({
     route: undefined,
     error: undefined,
   });
@@ -74,6 +74,9 @@ export const KyrixContextProvider = ({
   const shouldBlock = (nextPathname: string): boolean => {
     const href = nextPathname.split('?')[0];
     if (isNavigating) {
+      return true;
+    }
+    if (routeError.route === nextPathname && routeError.error?.data?.httpStatus === 401) {
       return true;
     }
     if (routeError.route === nextPathname && routeError.error) {

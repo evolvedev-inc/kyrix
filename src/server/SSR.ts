@@ -16,7 +16,6 @@ export const ssrRoutes = [
     id: 'Action' as const,
     path: '/action',
     handler: async () => {
-      await new Promise((R) => setTimeout(R, 3000));
       return {
         meta: { title: 'Action', description: 'Action page desc' },
         initialData: [{ name: 'Soham', age: 21 }],

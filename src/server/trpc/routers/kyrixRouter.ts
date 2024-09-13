@@ -41,10 +41,14 @@ export const kyrixRouter = router({
     } catch (err) {
       console.error(`Error in KyrixRouter for ${input.path} - ${err}`);
 
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'An error has occurred.',
-      });
+      if (!(err instanceof TRPCError)) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'An error has occurred.',
+        });
+      }
+
+      throw err;
     }
 
     return {
