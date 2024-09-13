@@ -12,6 +12,10 @@
   "exports": {
     "./*": "./src/*"
   },
+  "workspaces": [
+    "packages/*",
+    "packages/@kyrix/*"
+  ],
   "dependencies": {
     "@kyrix/react": "workspace:*",
     "@kyrix/server": "workspace:*",
