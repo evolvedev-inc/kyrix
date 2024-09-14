@@ -6,11 +6,9 @@ import mime from 'mime';
 
 import { convertMetadataToHTML, type Metadata } from './metadata';
 
-export type Middleware = (
-  req: IncomingMessage,
-  res: ServerResponse,
-  next?: (err?: any) => void
-) => void;
+export type Middleware = (req: IncomingMessage, res: ServerResponse, next: NextFunction) => void;
+
+export type NextFunction = (err?: any) => void;
 
 // To chain middlewares
 export const execMiddlewares = (
@@ -37,8 +35,8 @@ export const execMiddlewares = (
 };
 
 export const logger =
-  ({ port, verbose = false }: { port: number; verbose?: boolean }): Middleware =>
-  (req, res, next) => {
+  ({ port, verbose = false }: { port: number; verbose?: boolean }) =>
+  (req: IncomingMessage, res: ServerResponse, next: NextFunction) => {
     const url = new URL(`http://localhost:${port}${req.url || '/'}`);
     if (verbose) {
       console.log(`Incoming Request on ${decodeURI(url.pathname)} - Status: ${res.statusCode}`);
@@ -57,8 +55,8 @@ export const serveBuild =
     root: string;
     isProduction: boolean;
     ssrData?: { initialData?: any; meta?: Metadata };
-  }): Middleware =>
-  async (req, res) => {
+  }) =>
+  async (req: IncomingMessage, res: ServerResponse) => {
     try {
       const requestedPath = path.join(root, 'dist', 'client', req.url ?? 'index.html');
       const file = await fs.readFile(requestedPath, {
@@ -97,8 +95,8 @@ export const serveBuild =
   };
 
 export const createKyrixMiddleware =
-  ({ isProduction, root, viteServer: vite, ...opts }: KyrixMiddlewareConfig): Middleware =>
-  async (req, res, next) => {
+  ({ isProduction, root, viteServer: vite, ...opts }: KyrixMiddlewareConfig) =>
+  async (req: IncomingMessage, res: ServerResponse) => {
     if (!isProduction) {
       if (!vite) {
         throw new Error('Currently in development mode but failed to initialize vite server');
@@ -141,12 +139,6 @@ export const createKyrixMiddleware =
       // in dist/client directory, if matches that file is sent else index.html is served.
       // This ensures the client-side router takes over after javascript loads.
       const serve = serveBuild({ root, isProduction, ssrData: opts.ssrData });
-      if (!next) {
-        return serve(req, res, () => {
-          res.statusCode = 501;
-          res.end('Not Implemented');
-        });
-      }
-      return next();
+      return serve(req, res);
     }
   };
