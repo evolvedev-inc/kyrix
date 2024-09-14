@@ -10,8 +10,5 @@
     ".": "./index.ts"
   },
   "author": "Nilotpaul",
-  "license": "MIT",
-  "dependencies": {
-    "client": "workspace:*"
-  }
+  "license": "MIT"
 }

@@ -1,4 +1,4 @@
-import { trpc } from 'client/lib/trpcClient.ts';
+import { trpc } from '../../../../src/lib/trpcClient';
 
 export type LinkArgs = {
   href: string;

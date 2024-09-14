@@ -1,6 +1,6 @@
 import type { Metadata, SSRData } from '@kyrix/server';
 import { useContext, createContext, useState, useEffect } from 'react';
-import { trpc } from 'client/lib/trpcClient.ts';
+import { trpc } from '../../../../src/lib/trpcClient';
 import { HelmetProvider } from 'react-helmet-async';
 import MetadataWrapper from './MetadataWrapper';
 
