@@ -9,10 +9,10 @@ importers:
   .:
     dependencies:
       '@kyrix/react':
-        specifier: workspace:*
+        specifier: 'workspace: *'
         version: link:packages/@kyrix/react
       '@kyrix/server':
-        specifier: workspace:*
+        specifier: 'workspace: *'
         version: link:packages/@kyrix/server
       '@tanstack/react-query':
         specifier: ^4.36.1
@@ -103,17 +103,9 @@ importers:
         specifier: ^5.4.2
         version: 5.4.2(@types/node@22.5.2)
 
-  packages/@kyrix/react:
-    dependencies:
-      client:
-        specifier: workspace:*
-        version: link:../../..
+  packages/@kyrix/react: {}
 
-  packages/@kyrix/server:
-    dependencies:
-      client:
-        specifier: workspace:*
-        version: link:../../..
+  packages/@kyrix/server: {}
 
 packages:
 
