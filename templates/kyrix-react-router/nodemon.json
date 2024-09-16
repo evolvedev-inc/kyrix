@@ -1,0 +1,8 @@
+{
+  "watch": ["src", "index.html", "packages"],
+  "ext": "js,ts,jsx,tsx,css",
+  "ignore": ["dist", "tests", "build"],
+  "exec": "cross-env NODE_ENV=development tsx ./src/server/main.ts",
+  "delay": "30",
+  "quiet": true
+}

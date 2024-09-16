@@ -1,0 +1,13 @@
+{
+  "name": "@kyrix/react",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc"
+  },
+  "exports": {
+    "./*": "./src/*"
+  },
+  "author": "Nilotpaul",
+  "license": "MIT"
+}
